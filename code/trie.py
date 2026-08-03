@@ -616,7 +616,8 @@ def detect_layout_from_image(
         ]
 
         # Initialize OCR reader
-        reader = easyocr.Reader(['en', 'fr'], gpu=False)
+        reader = easyocr.Reader(['en', 'fr'], gpu=True)
+
 
         # Get OCR results
         validated, all_unique, char_counts, all_detected, method_names, all_full_detections = ocr_keyboard_layout(

@@ -17,6 +17,9 @@ def upscale_image(img, scale=2, interpolation=cv2.INTER_CUBIC):
     """
     height, width = img.shape[:2]
 
+
+
+
     # Compute new size
     new_width = int(width * scale)
     new_height = int(height * scale)

@@ -62,7 +62,7 @@ class App(ctk.CTk):
         extensions = (".png", ".jpg", ".jpeg", ".webp")
         files = [f for f in os.listdir(self.folder_path) if f.lower().endswith(extensions)]
 
-        for i, filename in enumerate(files):
+        for i, filename in enumerate(files):#enumate give index and elemnent
             file_path = os.path.join(self.folder_path, filename)
             try:
                 # 1. Image
@@ -87,16 +87,26 @@ class App(ctk.CTk):
     def open_full_image(self, path):
         top = ctk.CTkToplevel(self)
         top.title("Zoom")
-        top.geometry("800x600")
+        top.geometry("800x800")
         top.attributes("-topmost", True)
+        top.zoom = 1
+
+        def apply_zoom(delta):
+            top.zoom += delta
+            full_image.configure(size=(int(base_size[0] * top.zoom),
+                                       int(base_size[1] * top.zoom)))
+
+
+        top.zomeValue = 4
         try:
             pil_img = Image.open(path)
             w, h = pil_img.size
-            max_w, max_h = 800, 600
-            ratio = min(max_w/w, max_h/h)
-            new_size = (int(w * ratio * 0.95), int(h * ratio * 0.95))
-            full_image = ctk.CTkImage(pil_img, size=new_size)
+            ratio = min(800 / w, 600 / h)
+            base_size = (w * ratio, h * ratio)  # float, jamais modifié
+            full_image = ctk.CTkImage(pil_img, size=(int(base_size[0]), int(base_size[1])))
             ctk.CTkLabel(top, text="", image=full_image).pack(expand=True, fill="both")
+            top.btn_zoom = ctk.CTkButton(top, text="Zommer LOL", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=lambda : apply_zoom(0.2))
+            top.btn_zoom.place(relx=0.5, rely=0.95, anchor="center")
         except Exception as e:
             ctk.CTkLabel(top, text=f"Erreur: {e}").pack()
 
@@ -106,8 +116,9 @@ class App(ctk.CTk):
         # On supprime seulement les textes de résultats précédents
         # Les checkboxes NE SONT PAS touchées car elles ne sont pas dans cette liste.
         for label in self.result_labels:
+            print(self.result_labels)
             label.destroy()
-        self.result_labels = [] 
+        self.result_labels = []
 
         # --- 2. RECUPERATION ---
         files_to_analyze = []
