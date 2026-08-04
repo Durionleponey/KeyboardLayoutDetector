@@ -50,7 +50,7 @@ class App(ctk.CTk):
         self.status_label.grid(row=2, column=0, pady=(0, 5), sticky="ew")
 
 
-        self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.add_keyboard)
+        self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.open_image_from_dir)
         self.btn_validate.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
 
         self.btn_validate = ctk.CTkButton(self, text="VALIDER ET ANALYSER (BATCH)", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
@@ -123,9 +123,26 @@ class App(ctk.CTk):
         except Exception as e:
             ctk.CTkLabel(top, text=f"Erreur: {e}").pack()
 
-    def add_keyboard(self):
-        filename = fd.askopenfilename()
-        print(filename)
+    def open_image_from_dir(self):
+
+        file_path = fd.askopenfilename()
+        try:
+            pil_img = Image.open(file_path)
+            preview_image = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(100, 75))
+
+            img_label = ctk.CTkLabel(self.scroll_frame, text="", image=preview_image, cursor="hand2")
+            img_label.grid(row=len(self.checkboxes)+1, column=0, padx=10, pady=5)
+            img_label.bind("<Button-1>", command=lambda event, p=file_path: self.open_full_image(p))
+
+            # 2. Checkbox
+            chk = ctk.CTkCheckBox(self.scroll_frame, text=file_path, font=("Roboto", 14))
+            chk.grid(row=len(self.checkboxes)+1, column=1, padx=10, pady=5, sticky="w")
+
+            # 3. Stockage (pour ne pas perdre la checkbox)
+            self.checkboxes.append((chk, file_path, len(self.checkboxes)+1))
+
+        except Exception as e:
+            print(f"Erreur chargement {file_path}: {e}")
 
     def submit(self):
         # --- 1. NETTOYAGE CHIRURGICAL ---
