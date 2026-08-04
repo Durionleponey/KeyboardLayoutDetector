@@ -1,6 +1,7 @@
 import os
 import customtkinter as ctk
 from PIL import Image
+from tkinter import filedialog as fd
 
 # --- GESTION DE L'IMPORT DU FICHIER TRIE.PY ---
 try:
@@ -48,8 +49,12 @@ class App(ctk.CTk):
         self.status_label = ctk.CTkLabel(self, text="Sélectionnez des images et cliquez sur VALIDER.", font=("Roboto", 14), text_color="#F8A707")
         self.status_label.grid(row=2, column=0, pady=(0, 5), sticky="ew")
 
-        self.btn_validate = ctk.CTkButton(self, text="VALIDER ET ANALYSER (BATCH)", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
+
+        self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.add_keyboard)
         self.btn_validate.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
+
+        self.btn_validate = ctk.CTkButton(self, text="VALIDER ET ANALYSER (BATCH)", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
+        self.btn_validate.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="ew")
 
         self.load_images()
 
@@ -93,8 +98,7 @@ class App(ctk.CTk):
 
         def apply_zoom(delta):
             MAX_ZOOM = 4
-            MIN_ZOOM = 1
-            print(top.zoom)
+            MIN_ZOOM = 0.2
 
             if MIN_ZOOM < delta + top.zoom < MAX_ZOOM:
 
@@ -104,6 +108,7 @@ class App(ctk.CTk):
             top.btn_dezoom.configure(state="normal" if top.zoom + delta > MIN_ZOOM else "disabled")
             top.btn_zoom.configure(state="normal" if top.zoom + delta < MAX_ZOOM else "disabled")
         try:
+
             pil_img = Image.open(path)
             w, h = pil_img.size
             ratio = min(800 / w, 600 / h)
@@ -118,6 +123,9 @@ class App(ctk.CTk):
         except Exception as e:
             ctk.CTkLabel(top, text=f"Erreur: {e}").pack()
 
+    def add_keyboard(self):
+        filename = fd.askopenfilename()
+        print(filename)
 
     def submit(self):
         # --- 1. NETTOYAGE CHIRURGICAL ---
