@@ -92,12 +92,17 @@ class App(ctk.CTk):
         top.zoom = 1
 
         def apply_zoom(delta):
-            top.zoom += delta
-            full_image.configure(size=(int(base_size[0] * top.zoom),
-                                       int(base_size[1] * top.zoom)))
+            MAX_ZOOM = 4
+            MIN_ZOOM = 1
+            print(top.zoom)
 
+            if MIN_ZOOM < delta + top.zoom < MAX_ZOOM:
 
-        top.zomeValue = 4
+                top.zoom += delta
+                full_image.configure(size=(int(base_size[0] * top.zoom),int(base_size[1] * top.zoom)))
+
+            top.btn_dezoom.configure(state="normal" if top.zoom + delta > MIN_ZOOM else "disabled")
+            top.btn_zoom.configure(state="normal" if top.zoom + delta < MAX_ZOOM else "disabled")
         try:
             pil_img = Image.open(path)
             w, h = pil_img.size
@@ -105,8 +110,11 @@ class App(ctk.CTk):
             base_size = (w * ratio, h * ratio)  # float, jamais modifié
             full_image = ctk.CTkImage(pil_img, size=(int(base_size[0]), int(base_size[1])))
             ctk.CTkLabel(top, text="", image=full_image).pack(expand=True, fill="both")
-            top.btn_zoom = ctk.CTkButton(top, text="Zommer LOL", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=lambda : apply_zoom(0.2))
-            top.btn_zoom.place(relx=0.5, rely=0.95, anchor="center")
+            top.btn_zoom = ctk.CTkButton(top, text="Zommer", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=lambda : apply_zoom(0.2))
+            top.btn_dezoom = ctk.CTkButton(top, text="Dezommer", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=lambda : apply_zoom(-0.2))
+            top.btn_zoom.place(relx=0.5, rely=0.85, anchor="center")
+            top.btn_dezoom.place(relx=0.5, rely=0.95, anchor="center")
+            top.bind("<MouseWheel>", lambda e: apply_zoom(0.1 if e.delta > 0 else -0.1))
         except Exception as e:
             ctk.CTkLabel(top, text=f"Erreur: {e}").pack()
 
