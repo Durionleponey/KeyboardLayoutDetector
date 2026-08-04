@@ -69,25 +69,28 @@ class App(ctk.CTk):
 
         for i, filename in enumerate(files):#enumate give index and elemnent
             file_path = os.path.join(self.folder_path, filename)
-            try:
-                # 1. Image
-                if not os.path.exists(file_path): continue
-                pil_img = Image.open(file_path)
-                preview_image = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(100, 75))
-                
-                img_label = ctk.CTkLabel(self.scroll_frame, text="", image=preview_image, cursor="hand2")
-                img_label.grid(row=i, column=0, padx=10, pady=5)
-                img_label.bind("<Button-1>", command=lambda event, p=file_path: self.open_full_image(p))
+            self.load_image_in_interface(file_path)
 
-                # 2. Checkbox
-                chk = ctk.CTkCheckBox(self.scroll_frame, text=filename, font=("Roboto", 14))
-                chk.grid(row=i, column=1, padx=10, pady=5, sticky="w")
-                
-                # 3. Stockage (pour ne pas perdre la checkbox)
-                self.checkboxes.append((chk, file_path, i))
+    def load_image_in_interface(self, file_path):
+        try:
+            pil_img = Image.open(file_path)
+            preview_image = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(100, 75))
 
-            except Exception as e:
-                print(f"Erreur chargement {filename}: {e}")
+            img_label = ctk.CTkLabel(self.scroll_frame, text="", image=preview_image, cursor="hand2")
+            img_label.grid(row=len(self.checkboxes) + 1, column=0, padx=10, pady=5)
+            img_label.bind("<Button-1>", command=lambda event, p=file_path: self.open_full_image(p))
+
+            # 2. Checkbox
+            chk = ctk.CTkCheckBox(self.scroll_frame, text=file_path, font=("Roboto", 14))
+            chk.grid(row=len(self.checkboxes) + 1, column=1, padx=10, pady=5, sticky="w")
+
+            # 3. Stockage (pour ne pas perdre la checkbox)
+            self.checkboxes.append((chk, file_path, len(self.checkboxes) + 1))
+
+        except Exception as e:
+            print(f"Erreur chargement {file_path}: {e}")
+
+
 
     def open_full_image(self, path):
         top = ctk.CTkToplevel(self)
@@ -125,24 +128,10 @@ class App(ctk.CTk):
 
     def open_image_from_dir(self):
 
+
         file_path = fd.askopenfilename()
-        try:
-            pil_img = Image.open(file_path)
-            preview_image = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(100, 75))
+        self.load_image_in_interface(file_path)
 
-            img_label = ctk.CTkLabel(self.scroll_frame, text="", image=preview_image, cursor="hand2")
-            img_label.grid(row=len(self.checkboxes)+1, column=0, padx=10, pady=5)
-            img_label.bind("<Button-1>", command=lambda event, p=file_path: self.open_full_image(p))
-
-            # 2. Checkbox
-            chk = ctk.CTkCheckBox(self.scroll_frame, text=file_path, font=("Roboto", 14))
-            chk.grid(row=len(self.checkboxes)+1, column=1, padx=10, pady=5, sticky="w")
-
-            # 3. Stockage (pour ne pas perdre la checkbox)
-            self.checkboxes.append((chk, file_path, len(self.checkboxes)+1))
-
-        except Exception as e:
-            print(f"Erreur chargement {file_path}: {e}")
 
     def submit(self):
         # --- 1. NETTOYAGE CHIRURGICAL ---
