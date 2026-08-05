@@ -191,7 +191,7 @@ def ocr_keyboard_layout(reader, processed_images):
             img,
             allowlist=''.join(ALLOWED_CHARS),
             detail=1,
-            rotation_info=[90, 180, 270],
+            rotation_info=[90, 180, 270],#TODO : option light
             contrast_ths=0.5,
             text_threshold=0.4,  # detects thinner text
             low_text=0.3,  # improves faint text detection
@@ -606,7 +606,7 @@ def detect_layout_from_image(
         if img is None:
             print(f"Error: Could not load image: {path}")
             continue
-        img = upscale_image(img)
+        img = upscale_image(img)#TODO: rendre ca optionnel
         # Apply preprocessing methods
         processed_images = [
             method1_contrast_and_sharpen(img),
