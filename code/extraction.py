@@ -53,7 +53,7 @@ class App(ctk.CTk):
         self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
         self.btn_validate.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
 
-        self.btn_validate = ctk.CTkButton(self, text="SELECTIONNER TT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
+        self.btn_validate = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
         self.btn_validate.grid(row=3, column=1, padx=20, pady=(0, 20), sticky="ew")
 
         self.btn_validate = ctk.CTkButton(self, text="VALIDER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
@@ -63,6 +63,14 @@ class App(ctk.CTk):
 
 
         self.load_images()
+
+    def select_all_checkbox(self):
+        print(self.checkboxes)
+
+        for i in self.checkboxes:
+            i[0].select()
+
+
 
 
     def load_images(self):
