@@ -50,13 +50,13 @@ class App(ctk.CTk):
         self.status_label.grid(row=2, column=0, columnspan=2, pady=(0, 5), sticky="ew")
 
 
-        self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
-        self.btn_validate.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
+        self.btn_openfile = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
+        self.btn_openfile.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
 
-        self.btn_validate = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
-        self.btn_validate.grid(row=3, column=1, padx=20, pady=(0, 20), sticky="ew")
+        self.btn_selectAll = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
+        self.btn_selectAll.grid(row=3, column=1, padx=20, pady=(0, 20), sticky="ew")
 
-        self.btn_validate = ctk.CTkButton(self, text="VALIDER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
+        self.btn_validate = ctk.CTkButton(self, text="VALIDER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit, state="disabled")
         self.btn_validate.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
 
         self.grid_columnconfigure((0, 1), weight=1)
@@ -65,10 +65,20 @@ class App(ctk.CTk):
         self.load_images()
 
     def select_all_checkbox(self):
-        print(self.checkboxes)
 
         for i in self.checkboxes:
             i[0].select()
+
+        if len(self.checkboxes):
+            self.btn_validate.configure(state="normal")
+
+    def enable_disable_validate_button(self):
+        flag = 0
+        for chk in self.checkboxes:
+            if chk[0].get() == 1:
+                flag = 1
+                break
+        self.btn_validate.configure(state="normal" if flag else "disabled")
 
 
 
@@ -85,6 +95,7 @@ class App(ctk.CTk):
             file_path = os.path.join(self.folder_path, filename)
             self.load_image_in_interface(file_path)
 
+
     def load_image_in_interface(self, file_path):
         try:
             pil_img = Image.open(file_path)
@@ -95,7 +106,7 @@ class App(ctk.CTk):
             img_label.bind("<Button-1>", command=lambda event, p=file_path: self.open_full_image(p))
 
             # 2. Checkbox
-            chk = ctk.CTkCheckBox(self.scroll_frame, text=file_path, font=("Roboto", 14))
+            chk = ctk.CTkCheckBox(self.scroll_frame, text=file_path, font=("Roboto", 14), command=self.enable_disable_validate_button)
             chk.grid(row=len(self.checkboxes) + 1, column=1, padx=10, pady=5, sticky="w")
 
             # 3. Stockage (pour ne pas perdre la checkbox)
