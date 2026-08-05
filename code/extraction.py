@@ -35,11 +35,11 @@ class App(ctk.CTk):
 
         # --- INTERFACE ---
         self.title_label = ctk.CTkLabel(self, text="SÉLECTION DES CLAVIERS", font=("Roboto", 24, "bold"), text_color="#3B8ED0")
-        self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="ew")
+        self.title_label.grid(row=0, column=0, padx=20, columnspan=2, pady=(20, 10), sticky="ew")
 
         # Cadre central défilant
         self.scroll_frame = ctk.CTkScrollableFrame(self, label_text="Cliquez sur une image pour agrandir")
-        self.scroll_frame.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
+        self.scroll_frame.grid(row=1, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
         
         # Configuration des colonnes du scroll_frame
         self.scroll_frame.grid_columnconfigure(0, weight=0) # Image (fixe)
@@ -47,14 +47,20 @@ class App(ctk.CTk):
         self.scroll_frame.grid_columnconfigure(2, weight=1) # Résultat (Prend toute la place restante)
 
         self.status_label = ctk.CTkLabel(self, text="Sélectionnez des images et cliquez sur VALIDER.", font=("Roboto", 14), text_color="#F8A707")
-        self.status_label.grid(row=2, column=0, pady=(0, 5), sticky="ew")
+        self.status_label.grid(row=2, column=0, columnspan=2, pady=(0, 5), sticky="ew")
 
 
-        self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.open_image_from_dir)
+        self.btn_validate = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
         self.btn_validate.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
 
-        self.btn_validate = ctk.CTkButton(self, text="VALIDER ET ANALYSER (BATCH)", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
-        self.btn_validate.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="ew")
+        self.btn_validate = ctk.CTkButton(self, text="SELECTIONNER TT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
+        self.btn_validate.grid(row=3, column=1, padx=20, pady=(0, 20), sticky="ew")
+
+        self.btn_validate = ctk.CTkButton(self, text="VALIDER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit)
+        self.btn_validate.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
+
+        self.grid_columnconfigure((0, 1), weight=1)
+
 
         self.load_images()
 
