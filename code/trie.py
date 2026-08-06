@@ -1,14 +1,7 @@
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
+
 import easyocr
-from collections import Counter
 from typing import List, Tuple, Dict, Any
 import warnings
-import os
-from sklearn.utils.multiclass import type_of_target
-from sympy.physics.units import percent
-
 from utils import *
 
 warnings.filterwarnings('ignore')
@@ -166,7 +159,7 @@ def _map_likely(text: str) -> str:
 # =============================
 # OCR DETECTION
 # =============================
-def ocr_keyboard_layout(reader, processed_images):
+def ocr_keyboard_layout(reader, img):
     """
     Perform OCR on multiple processed images and validate detected characters.
 
@@ -179,40 +172,48 @@ def ocr_keyboard_layout(reader, processed_images):
     """
     all_detected = []  # List of lists of (char, confidence) for each method
     all_full_detections = []  # List of full OCR results with bounding boxes for each method
-    method_names = ["Contrast+Sharpen", "Blur+Sharpen", "Inversion", "Upscaled+Contrast+Blur+Sharpen"]
 
     # Define allowed characters for keyboard detection
-    ALLOWED_CHARS = set("AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn")
+    ALLOWED_CHARS = set("QWAZqwaz")
 
-    # Perform OCR on each processed image
-    for img in processed_images:
-        # Get full OCR results with bounding boxes
-        full_result = reader.readtext(
-            img,
-            allowlist=''.join(ALLOWED_CHARS),
-            detail=1,
-            rotation_info=[90, 180, 270],#TODO : option light
-            contrast_ths=0.5,
-            text_threshold=0.4,  # detects thinner text
-            low_text=0.3,  # improves faint text detection
-            link_threshold=0.3  # connects broken strokes
-        )
 
-        all_full_detections.append(full_result)
+    # Get full OCR results with bounding boxes
+    full_result = reader.readtext(
+        img,
+        allowlist=''.join(ALLOWED_CHARS),
+        detail=1,
+        contrast_ths=0.5,
+        text_threshold=0.4,  # detects thinner text#TODO sensibilité
+        low_text=0.3,  # improves faint text detection
+        link_threshold=0.3  # connects broken strokes
+    )
 
-        # Extract just the characters and confidences
-        chars_confidences = []
-        for detection in full_result:
-            text = detection[1].upper().strip()  # Convert to uppercase
-            confidence = detection[2]
-            # Split multiple characters if needed
-            for char in text:
-                if char in ALLOWED_CHARS:
-                    chars_confidences.append((char, confidence))
+    print(full_result)
 
-        all_detected.append(chars_confidences)
+
+    # Extract just the characters and confidences
+    chars_confidences = {}
+    temp = ()
+    for detection in full_result:#(bbox, text, confidence)
+        text = detection[1].upper().strip()  # Convert to uppercase
+        confidence = detection[2]
+        placement = detection[0]
+        # Split multiple characters if needed
+        for char in text:
+            if char in ALLOWED_CHARS and confidence > 0.2:
+                temp = (confidence, placement)
+                if char in detection:#i keep the better value
+                    if detection[char][0] < confidence:
+                        detection[char] = temp
+                else:
+                    chars_confidences[char] = temp
+
+    print(f"char-->{chars_confidences}")
+
+    all_detected.append(chars_confidences)
 
     # Collect all detected characters from all methods
+    print(f"char-->{chars_confidences}")
     all_chars = []
     for chars_conf in all_detected:
         all_chars.extend([char for char, _ in chars_conf])
@@ -227,20 +228,20 @@ def ocr_keyboard_layout(reader, processed_images):
         char_counts[char] = count
 
     # Validation logic: character must appear in at least 2 methods to be considered valid
-    validated = [char for char in all_unique if char_counts[char] >= 2]
+    validated = [char for char in all_unique if char_counts[char] >= 2]#TODO:settings
 
     # Sort by frequency (descending)
     validated = sorted(validated, key=lambda x: char_counts[x], reverse=True)
 
     # Debug output
-    print("\nOCR Results across methods:")
+    #print("\nOCR Results across methods:")
     for i, (name, chars_conf) in enumerate(zip(method_names, all_detected)):
         chars = [char for char, _ in chars_conf]
         print(f"  {name}: {sorted(set(chars))} ({len(chars)} chars)")
 
-    print(f"\nAll unique chars: {all_unique}")
-    print(f"Char counts: {char_counts}")
-    print(f"Validated chars (appear in ≥2 methods): {validated}")
+    #print(f"\nAll unique chars: {all_unique}")
+    #print(f"Char counts: {char_counts}")
+    #print(f"Validated chars (appear in ≥2 methods): {validated}")
 
     return validated, all_unique, char_counts, all_detected, method_names, all_full_detections
 # =============================
@@ -606,22 +607,23 @@ def detect_layout_from_image(
         if img is None:
             print(f"Error: Could not load image: {path}")
             continue
-        img = upscale_image(img)#TODO: rendre ca optionnel
+        #img = upscale_image(img)#TODO: rendre ca optionnel
         # Apply preprocessing methods
-        processed_images = [
-            method1_contrast_and_sharpen(img),
-            method2_blur_and_sharpen(img),
-            method3_simple_inversion(img),
-            method4_upscaled_contrast_blur_and_sharpen(img)
-        ]
+        #TODO si confiant pourquoi aller faire tt ça ?
+#        processed_images = [
+#            method1_contrast_and_sharpen(img),
+#            method2_blur_and_sharpen(img),
+#            method3_simple_inversion(img),
+#            method4_upscaled_contrast_blur_and_sharpen(img)
+#        ]
 
         # Initialize OCR reader
-        reader = easyocr.Reader(['en', 'fr'], gpu=True)
+        reader = easyocr.Reader(['en', 'fr'], gpu=True)#TODO initialiser qu'une fois
 
 
         # Get OCR results
         validated, all_unique, char_counts, all_detected, method_names, all_full_detections = ocr_keyboard_layout(
-            reader, processed_images
+            reader, img
         )
 
         # Use validated characters if available, otherwise all unique

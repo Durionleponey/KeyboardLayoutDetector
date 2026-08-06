@@ -1,11 +1,7 @@
 # main.py
-import threading
-from tkinter import Image, PhotoImage, Label
+
 
 from utils import loading_screen
-
-import customtkinter as ctk
-
 import os
 
 

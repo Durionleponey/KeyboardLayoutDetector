@@ -1,0 +1,13 @@
+quick start:
+	faire un point pas 4 pour + de facilité
+
+
+pourquoi j'ai opti:
+	scan tout l'image
+	changement de couleur inutile si confiance x 4 opération inutile si confiance
+	rotation de l'image par défault donc X 4 niveau de opération
+
+idée:
+	option pour l'u niveau de confiance
+	
+	
