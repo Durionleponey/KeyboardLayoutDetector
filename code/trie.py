@@ -1,6 +1,9 @@
 
 from typing import List, Tuple, Dict, Any
 import warnings
+
+import matplotlib.pyplot as plt
+
 from utils import *
 
 warnings.filterwarnings('ignore')
@@ -196,7 +199,7 @@ def ocr_keyboard_layout(reader, img):
     for detection in full_result:#(bbox, text, confidence)
         text = detection[1].upper().strip()  # Convert to uppercase
         confidence = detection[2]
-        placement = detection[0]
+        placement = detection[0][0]
         # Split multiple characters if needed
         for char in text:
             if char in ALLOWED_CHARS and confidence > 0.2:
@@ -209,10 +212,30 @@ def ocr_keyboard_layout(reader, img):
 
     print(f"char-->{chars_confidences}")
 
-    all_detected.append(chars_confidences)
 
     # Collect all detected characters from all methods
-    print(f"char-->{chars_confidences}")
+    print(f"char-->{chars_confidences=}")
+
+    image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+
+
+    for i in chars_confidences:
+        x = i[1][0]
+        y = i[1][1]
+        image[x:x+3,y:y+3,:] = 255
+
+
+    plt.imshow(image)
+    plt.show()
+
+
+    def keyAfterOrBefore(keyA,keyB):
+
+        pass
+
+
+
     all_chars = []
     for chars_conf in all_detected:
         all_chars.extend([char for char, _ in chars_conf])

@@ -97,6 +97,12 @@ class App(ctk.CTk):
             self.load_image_in_interface(file_path)
 
 
+
+        #Robin fast debug
+        self.select_all_checkbox()
+        self.submit()
+
+
     def load_image_in_interface(self, file_path):
         try:
             pil_img = Image.open(file_path)
