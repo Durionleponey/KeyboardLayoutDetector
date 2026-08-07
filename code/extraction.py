@@ -8,7 +8,7 @@ try:
     from trie import detect_layout_from_image
 except ImportError:
     print("ATTENTION: Impossible d'importer detect_layout_from_image. Mode simulation activé.")
-    def detect_layout_from_image(paths, debug = True):
+    def detect_layout_from_image(paths,reader, debug = True):
         # Simulation d'un retour dictionnaire complexe (comme sur ton screen)
         return [ {'status': 'Unknown keyboard layout', 'detected_keys': 47, 'layout': 'Inconnu'} for _ in paths ]
 # ----------------------------------------------
@@ -18,12 +18,13 @@ ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("dark-blue")
 
 class App(ctk.CTk):
-    def __init__(self):
+    def __init__(self,reader):
         super().__init__()
         self.title("Sélecteur d'Images et Analyse de Clavier")
         self.geometry("1000x700") # Un peu plus large pour bien voir
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
+        self.reader = reader
         
         # --- CHEMINS ---
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -182,7 +183,7 @@ class App(ctk.CTk):
 
         # --- 3. ANALYSE ---
         try:
-            raw_results = detect_layout_from_image(files_to_analyze)
+            raw_results = detect_layout_from_image(files_to_analyze,self.reader)
             
             # Conversion liste -> dictionnaire si besoin
             batch_results = {}
@@ -239,8 +240,8 @@ class App(ctk.CTk):
         self.status_label.configure(text=f"✅ Terminé ! ({count} résultats)", text_color="#2CC985")
 
 
-def selectionner_images():
-    app = App()
+def selectionner_images(reader):
+    app = App(reader)
     app.mainloop()
 
 if __name__ == "__main__":

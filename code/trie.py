@@ -1,5 +1,4 @@
 
-import easyocr
 from typing import List, Tuple, Dict, Any
 import warnings
 from utils import *
@@ -584,6 +583,7 @@ def get_row_labels_for_validated_chars(reader, processed_images, validated_chars
 # =============================
 def detect_layout_from_image(
         img_path,
+        reader,
         use_row_clustering: bool = True,
         debug: bool = True
 ) -> Dict[str, Tuple[str, float, List[str], Dict]]:
@@ -616,9 +616,6 @@ def detect_layout_from_image(
 #            method3_simple_inversion(img),
 #            method4_upscaled_contrast_blur_and_sharpen(img)
 #        ]
-
-        # Initialize OCR reader
-        reader = easyocr.Reader(['en', 'fr'], gpu=True)#TODO initialiser qu'une fois
 
 
         # Get OCR results
