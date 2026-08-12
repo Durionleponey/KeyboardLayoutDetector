@@ -8,22 +8,25 @@ from utils import *
 
 warnings.filterwarnings('ignore')
 
-def ocr_keyboard_layout(reader, files_to_analyze):
+
+def ocr_keyboard_layout_multi_files(reader, files_to_analyze):
+
+    results = []
+    for path in files_to_analyze:
+        results.append(ocr_keyboard_layout(reader,path))
+
+    return results
+
+
+def ocr_keyboard_layout(reader, file_to_analyze):
 
     plotoupas = 1
     plotoupas = 0
 
 
-    print(files_to_analyze)
+    print(file_to_analyze)
 
-    img = cv2.imread(files_to_analyze[0])
-
-
-
-    all_detected = []  # List of lists of (char, confidence) for each method
-    all_full_detections = []  # List of full OCR results with bounding boxes for each method
-
-    # Define allowed characters for keyboard detection
+    img = cv2.imread(file_to_analyze)
 
     h, w = img.shape[:2]
     img = img[:, :w // 3]
@@ -131,15 +134,12 @@ def ocr_keyboard_layout(reader, files_to_analyze):
 
 
     if isQwerty == 0:
-        print("ERROR")
+        return("ERROR")
 
     if isQwerty > 0:
-        print("QWERTY")
+        return("QWERTY")
     else:
-        print("AZERTY")
+        return("AZERTY")
 
 
 
-
-
-    return 0

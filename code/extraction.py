@@ -2,7 +2,7 @@ import os
 import customtkinter as ctk
 from PIL import Image
 from tkinter import filedialog as fd
-from trie import ocr_keyboard_layout
+from trie import ocr_keyboard_layout_multi_files
 
 
 ctk.set_appearance_mode("Dark")
@@ -180,57 +180,25 @@ class App(ctk.CTk):
 
         # --- 3. ANALYSE ---
         try:
-            raw_results = ocr_keyboard_layout(self.reader,files_to_analyze)
-            
-            # Conversion liste -> dictionnaire si besoin
-            batch_results = {}
-            if isinstance(raw_results, dict):
-                batch_results = raw_results
-            elif isinstance(raw_results, list):
-                if len(raw_results) == len(files_to_analyze):
-                    for path, res in zip(files_to_analyze, raw_results):
-                        batch_results[path] = res
-                else:
-                    for i, path in enumerate(files_to_analyze):
-                        if i < len(raw_results): batch_results[path] = raw_results[i]
-
-        except Exception as e:
-            self.status_label.configure(text=f"Erreur script: {e}", text_color="#FF0000")
-            print(e)
-            return
+            finalResult = ocr_keyboard_layout_multi_files(self.reader,files_to_analyze)
+        except:
+            for _ in range(5):
+                print("ERRROORR")
 
         # --- 4. AFFICHAGE JOLI ---
         count = 0
         for chk, file_path, row_index in self.checkboxes:
             if chk.get() == 1:
-                raw_data = batch_results.get(file_path, "Erreur")
-                
-                # NETTOYAGE DU TEXTE (Pour éviter le gros {dict} moche)
-                display_text = str(raw_data)
-                color = "#2CC985"
 
-                if isinstance(raw_data, dict):
-                    # Si c'est un dictionnaire, on essaie de prendre juste le 'status' ou le 'layout'
-                    if 'status' in raw_data:
-                        display_text = raw_data['status']
-                    elif 'layout' in raw_data:
-                        display_text = raw_data['layout']
-                    
-                    # Si c'est "Unknown...", on met en orange/rouge
-                    if "Unknown" in display_text or "Echec" in display_text:
-                        color = "#F8A707"
-                
                 # Création du label résultat
                 res_lbl = ctk.CTkLabel(self.scroll_frame, 
-                                     text=f"➜ {display_text}", 
-                                     font=("Roboto", 14, "bold"), 
-                                     text_color=color,
-                                     wraplength=400, # Important si le texte est long
+                                     text=f"➜ {finalResult[count]}",
+                                     font=("Roboto", 14, "bold"),
+                                     wraplength=400,
                                      justify="left")
                 
                 res_lbl.grid(row=row_index, column=2, padx=10, pady=5, sticky="w")
                 
-                # IMPORTANT : On ajoute ce label à la liste pour pouvoir le supprimer plus tard
                 self.result_labels.append(res_lbl)
                 count += 1
 
