@@ -10,6 +10,9 @@ warnings.filterwarnings('ignore')
 
 def ocr_keyboard_layout(reader, files_to_analyze):
 
+    plotoupas = 1
+    plotoupas = 0
+
 
     print(files_to_analyze)
 
@@ -48,7 +51,9 @@ def ocr_keyboard_layout(reader, files_to_analyze):
 
 
     image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    plt.imshow(image)
+
+    if plotoupas:
+        plt.imshow(image)
 
     dic_char = {}
 
@@ -75,10 +80,11 @@ def ocr_keyboard_layout(reader, files_to_analyze):
     isQwerty = 0
 
 
-    for i in dic_char:
-        key = dic_char[i]
-        plt.text(key[0][0], key[0][1] - 8, i.upper(), color='lime', fontsize=14, ha='center')
-    plt.show()
+    if plotoupas:
+        for i in dic_char:
+            key = dic_char[i]
+            plt.text(key[0][0], key[0][1] - 8, i.upper(), color='lime', fontsize=14, ha='center')
+        plt.show()
 
 
 
@@ -94,7 +100,7 @@ def ocr_keyboard_layout(reader, files_to_analyze):
         return ay < by
 
     scoreDic = {
-        "a": {"q": 2, "w": 2},
+        "a": {"q": 2, "w": 3},
         "z": {"q": 2, "w": 3},
     }
 
@@ -122,6 +128,10 @@ def ocr_keyboard_layout(reader, files_to_analyze):
 
 
     print(isQwerty)
+
+
+    if isQwerty == 0:
+        print("ERROR")
 
     if isQwerty > 0:
         print("QWERTY")

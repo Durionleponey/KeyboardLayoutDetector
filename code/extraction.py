@@ -90,8 +90,8 @@ class App(ctk.CTk):
 
 
         #Robin fast debug
-        self.select_all_checkbox()
-        self.submit()
+        #self.select_all_checkbox()
+        #self.submit()
 
 
     def load_image_in_interface(self, file_path):
