@@ -40,6 +40,10 @@ def ocr_keyboard_layout(reader, files_to_analyze):
         ycenter_ths=0.0,
     )
 
+    tol = 30
+
+    print(tol)
+
 
 
 
@@ -68,13 +72,15 @@ def ocr_keyboard_layout(reader, files_to_analyze):
     print(dic_char)
 
 
-    azerty = 0
-    qwerty = 0
+    isQwerty = 0
+
 
     for i in dic_char:
         key = dic_char[i]
         plt.text(key[0][0], key[0][1] - 8, i.upper(), color='lime', fontsize=14, ha='center')
     plt.show()
+
+
 
 
     def a_before_b(a, b, tol):
@@ -83,16 +89,44 @@ def ocr_keyboard_layout(reader, files_to_analyze):
             return ay < by
         return ax < bx
 
-    def a_upper_b(a, b, tol):
+    def a_upper_b_strict(a, b):
         (ax, ay), (bx, by) = a[0], b[0]
         return ay < by
 
-    #print(f'is a before z --->{a_before_b(dic_char["a"],dic_char["z"],)}')
-    #print(f'is q before x --->{a_before_b(dic_char["q"],dic_char["x"])}')
+    scoreDic = {
+        "a": {"q": 2, "w": 2},
+        "z": {"q": 2, "w": 3},
+    }
 
 
-    total = azerty + qwerty
-    print(azerty,qwerty,total)
+    done = set()
+
+
+    for key in dic_char:
+        for compaKey in dic_char:
+            if (key,compaKey) not in done and key in scoreDic and compaKey in scoreDic[key]:#🎉
+
+                done.add((key,compaKey))
+
+                value = scoreDic[key][compaKey]
+
+                test = a_before_b(dic_char[key], dic_char[compaKey], tol)
+
+                if test > 0:
+                    isQwerty-= value
+                else:
+                    isQwerty+= value
+
+
+
+
+
+    print(isQwerty)
+
+    if isQwerty > 0:
+        print("QWERTY")
+    else:
+        print("AZERTY")
 
 
 
