@@ -2,16 +2,7 @@ import os
 import customtkinter as ctk
 from PIL import Image
 from tkinter import filedialog as fd
-
-# --- GESTION DE L'IMPORT DU FICHIER TRIE.PY ---
-try:
-    from trie import detect_layout_from_image
-except ImportError:
-    print("ATTENTION: Impossible d'importer detect_layout_from_image. Mode simulation activé.")
-    def detect_layout_from_image(paths,reader, debug = True):
-        # Simulation d'un retour dictionnaire complexe (comme sur ton screen)
-        return [ {'status': 'Unknown keyboard layout', 'detected_keys': 47, 'layout': 'Inconnu'} for _ in paths ]
-# ----------------------------------------------
+from trie import ocr_keyboard_layout
 
 
 ctk.set_appearance_mode("Dark")
@@ -189,7 +180,7 @@ class App(ctk.CTk):
 
         # --- 3. ANALYSE ---
         try:
-            raw_results = detect_layout_from_image(files_to_analyze,self.reader)
+            raw_results = ocr_keyboard_layout(self.reader,files_to_analyze)
             
             # Conversion liste -> dictionnaire si besoin
             batch_results = {}
