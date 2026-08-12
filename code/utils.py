@@ -38,67 +38,7 @@ def upscale_image(img, scale=2, interpolation=cv2.INTER_CUBIC):
     upscaled = cv2.resize(img, new_size, interpolation=interpolation)
     return upscaled
 
-def increase_contrast(img, clip_limit=1.0, tile_grid_size=(5, 5)):
-    """
-    Increases the contrast of an image using CLAHE (adaptive histogram equalization).
 
-    Parameters:
-        img (numpy.ndarray): Input image (BGR or grayscale).
-        clip_limit (float): Threshold for contrast limiting.
-        tile_grid_size (tuple): Size of the grid for the histogram equalization.
-
-    Returns:
-        numpy.ndarray: Image with enhanced contrast.
-    """
-    # Convert to grayscale if image is BGR
-    if len(img.shape) == 3:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    else:
-        gray = img.copy()
-
-    clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size)
-    enhanced = clahe.apply(gray)
-
-    # If original was color, convert back to BGR
-    if len(img.shape) == 3:
-        enhanced_bgr = cv2.cvtColor(enhanced, cv2.COLOR_GRAY2BGR)
-        return enhanced_bgr
-    else:
-        return enhanced
-
-def sharpen_image(img):
-    kernel = np.array([[0, -1, 0],
-                       [-1, 5,-1],
-                       [0, -1, 0]])
-    return cv2.filter2D(img, -1, kernel)
-
-def apply_gaussian_blur(img, kernel_size=(5, 5), sigma=0):
-    """
-    Applies Gaussian Blur to reduce noise while preserving edges.
-
-    Parameters:
-        img (numpy.ndarray): Input image (BGR or grayscale)
-        kernel_size (tuple): Size of the Gaussian kernel (must be odd numbers)
-        sigma (int): Standard deviation in X and Y direction (0 = calculated from kernel size)
-
-    Returns:
-        numpy.ndarray: Blurred image
-    """
-    return cv2.GaussianBlur(img, kernel_size, sigma)
-
-def convert_to_gray(img,  alpha=0.5):
-    """
-    Converts a BGR image to Otsu-binarized grayscale.
-    If the result is mostly black, it automatically inverts it.
-    """
-    # Convert BGR → grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, otsu = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Blend grayscale and Otsu binary
-    soft = cv2.addWeighted(gray, alpha, otsu, 1 - alpha, 0)
-
-    return soft
 
 
 
