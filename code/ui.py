@@ -3,6 +3,7 @@ import customtkinter as ctk
 from PIL import Image
 from tkinter import filedialog as fd
 from ocr import ocr_keyboard_layout_multi_files
+import random
 
 
 ctk.set_appearance_mode("Dark")
@@ -40,14 +41,14 @@ class App(ctk.CTk):
         self.btn_openfile = ctk.CTkButton(self, text="OUVRIR UN AUTRE FICHIER", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.open_image_from_dir)
         self.btn_openfile.grid(row=3, column=0, padx=20, pady=(0, 20), sticky="ew")
 
-        self.btn_selectAll = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
-        self.btn_selectAll.grid(row=3, column=1, padx=20, pady=(0, 20), sticky="ew")
+        self.ctk_export_txt = ctk.CTkCheckBox(self, text="EXPORTER LES RESULTATS EN .TXT", font=("Roboto", 14))
+        self.ctk_export_txt.grid(row=3, column=1, padx=20, pady=(0, 20))
 
         self.btn_openfile = ctk.CTkButton(self, text="DESELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.deselect_all_checkbox)
         self.btn_openfile.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="ew")
 
-        self.btn_selectAll = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
-        self.btn_selectAll.grid(row=4, column=1, padx=20, pady=(0, 20), sticky="ew")
+        self.btn_selectAll2 = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
+        self.btn_selectAll2.grid(row=4, column=1, padx=20, pady=(0, 20), sticky="ew")
 
         self.btn_validate = ctk.CTkButton(self, text="VALIDER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit, state="disabled")
         self.btn_validate.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
@@ -164,6 +165,7 @@ class App(ctk.CTk):
 
 
     def submit(self):
+        global f
         for label in self.result_labels:
             #print(self.result_labels)
             label.destroy()
@@ -188,21 +190,40 @@ class App(ctk.CTk):
                 print("ERRROORR")
 
         count = 0
-        for chk, file_path, row_index in self.checkboxes:
-            if chk.get() == 1:
 
-                res_lbl = ctk.CTkLabel(self.scroll_frame,
-                                     text=f"➜ {finalResult[count]}",
-                                     font=("Roboto", 14, "bold"),
-                                     wraplength=400,
-                                     justify="left")
-                
-                res_lbl.grid(row=row_index, column=2, padx=10, pady=5, sticky="w")
-                
-                self.result_labels.append(res_lbl)
-                count += 1
+        if self.ctk_export_txt.get() == 1:
+            try:
+                self.ctk_export_txt.configure(state="disabled")
+                f = open("keyboardLayoutDetector" + str(random.random())[2:] + "resultats.txt", "w", encoding="utf-8")
+            except Exception as e:
+                print(e)
 
-        self.status_label.configure(text=f"✅ Terminé ! ({count} résultats)", text_color="#2CC985")
+        try:
+            for chk, file_path, row_index in self.checkboxes:
+                if chk.get() == 1:
+                    if self.ctk_export_txt.get() == 1:
+                        f.write(f"{file_path} : {finalResult[count]}\n")
+
+                    res_lbl = ctk.CTkLabel(self.scroll_frame,
+                                         text=f"➜ {finalResult[count]}",
+                                         font=("Roboto", 14, "bold"),
+                                         wraplength=400,
+                                         justify="left")
+
+                    res_lbl.grid(row=row_index, column=2, padx=10, pady=5, sticky="w")
+
+                    self.result_labels.append(res_lbl)
+                    count += 1
+
+            self.status_label.configure(text=f"✅ Terminé ! ({count} résultats)", text_color="#2CC985")
+            self.ctk_export_txt.configure(state="normal")
+
+        except Exception as e:
+            print(e)
+
+
+        if f:
+            f.close()
 
 
 def selectionner_images(reader):
