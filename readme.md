@@ -8,7 +8,9 @@ Ce petit projet détecte automatiquement le layout de clavier (AZERTY ou QWERTY)
 
 
 git clone https://github.com/Durionleponey/KeyboardLayoutDetector.git
+
 cd KeyboardLayoutDetector
+
 pip install -r requirements.txt
 
 python main.py
