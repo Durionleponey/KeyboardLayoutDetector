@@ -43,8 +43,14 @@ class App(ctk.CTk):
         self.btn_selectAll = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
         self.btn_selectAll.grid(row=3, column=1, padx=20, pady=(0, 20), sticky="ew")
 
+        self.btn_openfile = ctk.CTkButton(self, text="DESELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.deselect_all_checkbox)
+        self.btn_openfile.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="ew")
+
+        self.btn_selectAll = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
+        self.btn_selectAll.grid(row=4, column=1, padx=20, pady=(0, 20), sticky="ew")
+
         self.btn_validate = ctk.CTkButton(self, text="VALIDER", font=("Roboto", 14, "bold"), height=50, fg_color="#2CC985", hover_color="#229A65", command=self.submit, state="disabled")
-        self.btn_validate.grid(row=4, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
+        self.btn_validate.grid(row=5, column=0, columnspan=2, padx=20, pady=(0, 20), sticky="ew")
 
         self.grid_columnconfigure((0, 1), weight=1)
 
@@ -58,6 +64,14 @@ class App(ctk.CTk):
 
         if len(self.checkboxes):
             self.btn_validate.configure(state="normal")
+
+    def deselect_all_checkbox(self):
+
+        for i in self.checkboxes:
+            i[0].set(0)
+
+        if len(self.checkboxes):
+            self.btn_validate.configure(state="disabled")
 
     def enable_disable_validate_button(self):
         flag = 0
@@ -98,11 +112,9 @@ class App(ctk.CTk):
             img_label.grid(row=len(self.checkboxes) + 1, column=0, padx=10, pady=5)
             img_label.bind("<Button-1>", command=lambda event, p=file_path: self.open_full_image(p))
 
-            # 2. Checkbox
             chk = ctk.CTkCheckBox(self.scroll_frame, text=file_path, font=("Roboto", 14), command=self.enable_disable_validate_button)
             chk.grid(row=len(self.checkboxes) + 1, column=1, padx=10, pady=5, sticky="w")
 
-            # 3. Stockage (pour ne pas perdre la checkbox)
             self.checkboxes.append((chk, file_path, len(self.checkboxes) + 1))
 
         except Exception as e:
@@ -152,15 +164,11 @@ class App(ctk.CTk):
 
 
     def submit(self):
-        # --- 1. NETTOYAGE CHIRURGICAL ---
-        # On supprime seulement les textes de résultats précédents
-        # Les checkboxes NE SONT PAS touchées car elles ne sont pas dans cette liste.
         for label in self.result_labels:
             #print(self.result_labels)
             label.destroy()
         self.result_labels = []
 
-        # --- 2. RECUPERATION ---
         files_to_analyze = []
         for chk, file_path, row_index in self.checkboxes:
             if chk.get() == 1:
@@ -183,8 +191,7 @@ class App(ctk.CTk):
         for chk, file_path, row_index in self.checkboxes:
             if chk.get() == 1:
 
-                # Création du label résultat
-                res_lbl = ctk.CTkLabel(self.scroll_frame, 
+                res_lbl = ctk.CTkLabel(self.scroll_frame,
                                      text=f"➜ {finalResult[count]}",
                                      font=("Roboto", 14, "bold"),
                                      wraplength=400,
