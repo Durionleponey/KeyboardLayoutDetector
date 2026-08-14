@@ -2,7 +2,7 @@ import os
 import customtkinter as ctk
 from PIL import Image
 from tkinter import filedialog as fd
-from trie import ocr_keyboard_layout_multi_files
+from ocr import ocr_keyboard_layout_multi_files
 
 
 ctk.set_appearance_mode("Dark")
@@ -17,26 +17,21 @@ class App(ctk.CTk):
         self.grid_rowconfigure(1, weight=1)
         self.reader = reader
         
-        # --- CHEMINS ---
         current_dir = os.path.dirname(os.path.abspath(__file__))
         self.folder_path = os.path.join(current_dir, "..", "data")
         
-        # --- LISTES IMPORTANTES ---
         self.checkboxes = []      # (widget_checkbox, chemin_fichier, index_ligne)
         self.result_labels = []   # LISTE SÉPARÉE pour ne supprimer QUE les résultats
 
-        # --- INTERFACE ---
         self.title_label = ctk.CTkLabel(self, text="SÉLECTION DES CLAVIERS", font=("Roboto", 24, "bold"), text_color="#3B8ED0")
         self.title_label.grid(row=0, column=0, padx=20, columnspan=2, pady=(20, 10), sticky="ew")
 
-        # Cadre central défilant
         self.scroll_frame = ctk.CTkScrollableFrame(self, label_text="Cliquez sur une image pour agrandir")
         self.scroll_frame.grid(row=1, column=0, columnspan=2, padx=20, pady=10, sticky="nsew")
         
-        # Configuration des colonnes du scroll_frame
-        self.scroll_frame.grid_columnconfigure(0, weight=0) # Image (fixe)
-        self.scroll_frame.grid_columnconfigure(1, weight=0) # Checkbox (fixe)
-        self.scroll_frame.grid_columnconfigure(2, weight=1) # Résultat (Prend toute la place restante)
+        self.scroll_frame.grid_columnconfigure(0, weight=0)
+        self.scroll_frame.grid_columnconfigure(1, weight=0)
+        self.scroll_frame.grid_columnconfigure(2, weight=1)
 
         self.status_label = ctk.CTkLabel(self, text="Sélectionnez des images et cliquez sur VALIDER.", font=("Roboto", 14), text_color="#F8A707")
         self.status_label.grid(row=2, column=0, columnspan=2, pady=(0, 5), sticky="ew")
@@ -172,20 +167,18 @@ class App(ctk.CTk):
                 files_to_analyze.append(file_path)
         
         if not files_to_analyze:
-            self.status_label.configure(text="❌ Aucune image sélectionnée.", text_color="#FF0000")
+            self.status_label.configure(text="Aucune image sélectionnée.", text_color="#FF0000")
             return
             
         self.status_label.configure(text=f"Analyse en cours de {len(files_to_analyze)} image(s)...", text_color="#F8A707")
         self.update_idletasks()
 
-        # --- 3. ANALYSE ---
         try:
             finalResult = ocr_keyboard_layout_multi_files(self.reader,files_to_analyze)
         except:
             for _ in range(5):
                 print("ERRROORR")
 
-        # --- 4. AFFICHAGE JOLI ---
         count = 0
         for chk, file_path, row_index in self.checkboxes:
             if chk.get() == 1:

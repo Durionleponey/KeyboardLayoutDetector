@@ -22,7 +22,7 @@ def main():
     def load():
 
         global importTemp
-        from extraction import selectionner_images as f
+        from ui import selectionner_images as f
         importTemp = f
         global reader
         import easyocr
