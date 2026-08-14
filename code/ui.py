@@ -44,8 +44,8 @@ class App(ctk.CTk):
         self.ctk_export_txt = ctk.CTkCheckBox(self, text="EXPORTER LES RESULTATS EN .TXT", font=("Roboto", 14))
         self.ctk_export_txt.grid(row=3, column=1, padx=20, pady=(0, 20))
 
-        self.btn_openfile = ctk.CTkButton(self, text="DESELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.deselect_all_checkbox)
-        self.btn_openfile.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="ew")
+        self.btn_openfile2 = ctk.CTkButton(self, text="DESELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.deselect_all_checkbox)
+        self.btn_openfile2.grid(row=4, column=0, padx=20, pady=(0, 20), sticky="ew")
 
         self.btn_selectAll2 = ctk.CTkButton(self, text="SELECTIONNER TOUT", font=("Roboto", 14, "bold"), height=50, fg_color="#9D6526", hover_color="#C26526", command=self.select_all_checkbox)
         self.btn_selectAll2.grid(row=4, column=1, padx=20, pady=(0, 20), sticky="ew")
@@ -163,8 +163,24 @@ class App(ctk.CTk):
         file_path = fd.askopenfilename()
         self.load_image_in_interface(file_path)
 
+    def set_ui_state(self, state):
+        for w in (self.btn_validate, self.btn_openfile,self.btn_openfile2, self.btn_selectAll2,self.ctk_export_txt):
+            w.configure(state=state)
+        for chk, _, _ in self.checkboxes:
+            chk.configure(state=state)
+
+        if state == "normal":
+            self.resizable(True, True)
+            self.overrideredirect(False)
+        else:
+            self.resizable(False, False)
+            self.overrideredirect(True)
+
+
 
     def submit(self):
+        self.set_ui_state("disabled")
+        self.update()
         global f
         for label in self.result_labels:
             #print(self.result_labels)
@@ -190,6 +206,8 @@ class App(ctk.CTk):
                 print("ERRROORR")
 
         count = 0
+
+        f = None
 
         if self.ctk_export_txt.get() == 1:
             try:
@@ -222,8 +240,10 @@ class App(ctk.CTk):
             print(e)
 
 
-        if f:
+        if f is not None:
             f.close()
+        self.set_ui_state("normal")
+        self.update()
 
 
 def selectionner_images(reader):
