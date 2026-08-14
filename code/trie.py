@@ -1,9 +1,4 @@
-
-from typing import List, Tuple, Dict, Any
 import warnings
-
-import matplotlib.pyplot as plt
-
 from utils import *
 
 warnings.filterwarnings('ignore')
@@ -24,7 +19,7 @@ def ocr_keyboard_layout(reader, file_to_analyze):
     plotoupas = 0
 
 
-    print(file_to_analyze)
+    #print(file_to_analyze)
 
     img = cv2.imread(file_to_analyze)
 
@@ -48,7 +43,7 @@ def ocr_keyboard_layout(reader, file_to_analyze):
 
     tol = 30
 
-    print(tol)
+    #print(tol)
 
 
 
@@ -77,7 +72,7 @@ def ocr_keyboard_layout(reader, file_to_analyze):
         if dic_char[text][1] < conf:
             dic_char[text] = [[cx, cy], conf]
 
-    print(dic_char)
+    #print(dic_char)
 
 
     isQwerty = 0
@@ -98,9 +93,6 @@ def ocr_keyboard_layout(reader, file_to_analyze):
             return ay < by
         return ax < bx
 
-    def a_upper_b_strict(a, b):
-        (ax, ay), (bx, by) = a[0], b[0]
-        return ay < by
 
     scoreDic = {
         "a": {"q": 2, "w": 3},
@@ -113,7 +105,7 @@ def ocr_keyboard_layout(reader, file_to_analyze):
 
     for key in dic_char:
         for compaKey in dic_char:
-            if (key,compaKey) not in done and key in scoreDic and compaKey in scoreDic[key]:#🎉
+            if (key,compaKey) not in done and key in scoreDic and compaKey in scoreDic[key]:
 
                 done.add((key,compaKey))
 
@@ -130,7 +122,7 @@ def ocr_keyboard_layout(reader, file_to_analyze):
 
 
 
-    print(isQwerty)
+    #print(isQwerty)
 
 
     if isQwerty == 0:

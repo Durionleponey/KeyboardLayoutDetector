@@ -161,7 +161,7 @@ class App(ctk.CTk):
         # On supprime seulement les textes de résultats précédents
         # Les checkboxes NE SONT PAS touchées car elles ne sont pas dans cette liste.
         for label in self.result_labels:
-            print(self.result_labels)
+            #print(self.result_labels)
             label.destroy()
         self.result_labels = []
 

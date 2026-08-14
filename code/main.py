@@ -8,7 +8,7 @@ import os
 
 os.environ["TCL_LIBRARY"] = r"C:\Program Files\Python313\tcl\tcl8.6"
 os.environ["TK_LIBRARY"]  = r"C:\Program Files\Python313\tcl\tk8.6"
-print("hello")
+#print("hello")
 
 
 importTemp =None
