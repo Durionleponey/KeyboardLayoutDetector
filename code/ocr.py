@@ -7,9 +7,11 @@ warnings.filterwarnings('ignore')
 def ocr_keyboard_layout_multi_files(reader, files_to_analyze):
 
     results = []
-    for path in files_to_analyze:
-        temp = loading_screen(ocr_keyboard_layout,path=path,reader=reader)
-        print(f"--->{temp}")
+
+    number_of_image_to_load = len(files_to_analyze)
+    for i,path in enumerate(files_to_analyze):
+        temp = loading_screen(ocr_keyboard_layout,path=path,reader=reader,number_of_image_to_load=number_of_image_to_load,current_image_number=i+1)
+        #print(f"--->{temp}")
         results.append(temp)
     return results
 
@@ -21,7 +23,7 @@ def ocr_keyboard_layout(file_to_analyze, reader):
 
 
 
-    print(f"path--->{file_to_analyze}")
+    #print(f"path--->{file_to_analyze}")
 
     img = cv2.imread(file_to_analyze)
 
