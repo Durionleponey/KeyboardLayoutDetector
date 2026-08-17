@@ -11,7 +11,9 @@ git clone https://github.com/Durionleponey/KeyboardLayoutDetector.git
 
 cd KeyboardLayoutDetector
 
-pip install -r requirements.txt
+pip install -r requirement.txt
+
+cd code
 
 python main.py
 
