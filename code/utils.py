@@ -13,12 +13,19 @@ def loading_screen(load, path=None, reader=None, number_of_image_to_load=None, c
 
     loadingScreen = ctk.CTk()
     loadingScreen.title("KeyboardLayoutIdentificator")
-    loadingScreen.geometry("1000x700")
+
+    if number_of_image_to_load is None:
+        ywindowssize = 700
+    else:
+        ywindowssize = 400
+
+    loadingScreen.geometry(f"1000x{ywindowssize}")
     loadingScreen.resizable(False, False)\
 
-    #photo = PhotoImage(file="./asset/keyboardLayoutDetectorLogo.png")
-    #lbl = Label(loadingScreen, image=photo)
-    #lbl.place(relx=0.5, rely=0.4, anchor="center")
+    if number_of_image_to_load is None:
+        photo = PhotoImage(file="./asset/keyboardLayoutDetectorLogo.png")
+        lbl = Label(loadingScreen, image=photo)
+        lbl.place(relx=0.5, rely=0.4, anchor="center")
     if number_of_image_to_load is not None:
         loadingTxt = f"Identification...Please wait ({current_image_number}/{number_of_image_to_load} image loaded)"
     else:
