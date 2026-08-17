@@ -38,7 +38,7 @@ def loading_screen(load, path=None, reader=None, number_of_image_to_load=None, c
 
 
 
-    print("hello")
+    #print("hello")
 
 
 
