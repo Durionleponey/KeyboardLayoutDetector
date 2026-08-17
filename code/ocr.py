@@ -34,16 +34,20 @@ def ocr_keyboard_layout(file_to_analyze, reader):
     gray = cv2.bitwise_not(gray)
 
 
-    full_result = reader.readtext(
-        gray,
-        allowlist='AZQW',
-        detail=1,
-        text_threshold=0.4,
-        low_text=0.3,
-        link_threshold=0.9,
-        width_ths=0.0,
-        ycenter_ths=0.0,
-    )
+    def raw_keybord_reader(img):
+
+        return reader.readtext(
+            img,
+            allowlist='AZQW',
+            detail=1,
+            text_threshold=0.4,
+            low_text=0.3,
+            link_threshold=0.9,
+            width_ths=0.0,
+            ycenter_ths=0.0,
+        )
+
+    full_result = raw_keybord_reader(gray)
 
     tol = 30
 
@@ -51,35 +55,33 @@ def ocr_keyboard_layout(file_to_analyze, reader):
 
 
 
-
-    image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
     if plotoupas:
+        image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         plt.imshow(image)
 
-    dic_char = {}
 
+    def scan_raw_to_data(full_result):
 
-    for bbox, text, conf in full_result:
+        dic_char = {}
+        for bbox, text, conf in full_result:
 
-        if len(text) > 1 or conf < 0.2:
-            continue
+            if len(text) > 1 or conf < 0.2:
+                continue
 
-        text = text.lower()
-        xs = [p[0] for p in bbox]
-        ys = [p[1] for p in bbox]
-        cx, cy = sum(xs) / 4, sum(ys) /4
+            text = text.lower()
+            xs = [p[0] for p in bbox]
+            ys = [p[1] for p in bbox]
+            cx, cy = sum(xs) / 4, sum(ys) /4
 
-        if text not in dic_char:
-            dic_char[text] = [[cx,cy],conf]
-            continue
-        if dic_char[text][1] < conf:
-            dic_char[text] = [[cx, cy], conf]
+            if text not in dic_char:
+                dic_char[text] = [[cx,cy],conf]
+                continue
+            if dic_char[text][1] < conf:
+                dic_char[text] = [[cx, cy], conf]
 
-    #print(dic_char)
+        return dic_char
 
-
-    isQwerty = 0
+    dic_char = scan_raw_to_data(full_result)
 
 
     if plotoupas:
@@ -91,43 +93,49 @@ def ocr_keyboard_layout(file_to_analyze, reader):
 
 
 
-    def a_before_b(a, b, tol):
-        (ax, ay), (bx, by) = a[0], b[0]
-        if abs(ay - by) > tol:
-            return ay < by
-        return ax < bx
-
-
-    scoreDic = {
-        "a": {"q": 2, "w": 3},
-        "z": {"q": 2, "w": 3},
-    }
-
-
-    done = set()
-
-
-    for key in dic_char:
-        for compaKey in dic_char:
-            if (key,compaKey) not in done and key in scoreDic and compaKey in scoreDic[key]:
-
-                done.add((key,compaKey))
-
-                value = scoreDic[key][compaKey]
-
-                test = a_before_b(dic_char[key], dic_char[compaKey], tol)
-
-                if test > 0:
-                    isQwerty-= value
-                else:
-                    isQwerty+= value
 
 
 
+
+    def data_to_verdict(dic_char):
+
+        isQwerty = 0
+
+        def a_before_b(a, b, tol):
+            (ax, ay), (bx, by) = a[0], b[0]
+            if abs(ay - by) > tol:
+                return ay < by
+            return ax < bx
+
+        done = set()
+
+        scoreDic = {
+            "a": {"q": 2, "w": 3},
+            "z": {"q": 2, "w": 3},
+        }
+
+        for key in dic_char:
+            for compaKey in dic_char:
+                if (key,compaKey) not in done and key in scoreDic and compaKey in scoreDic[key]:
+
+                    done.add((key,compaKey))
+
+                    value = scoreDic[key][compaKey]
+
+                    test = a_before_b(dic_char[key], dic_char[compaKey], tol)
+
+                    if test > 0:
+                        isQwerty-= value
+                    else:
+                        isQwerty+= value
+
+        return isQwerty
+
+
+    isQwerty = data_to_verdict(dic_char)
 
 
     print(isQwerty)
-
 
     if isQwerty == 0:
         return("ERROR")
