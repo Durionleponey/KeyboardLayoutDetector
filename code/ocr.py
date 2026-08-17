@@ -8,18 +8,20 @@ def ocr_keyboard_layout_multi_files(reader, files_to_analyze):
 
     results = []
     for path in files_to_analyze:
-        results.append(ocr_keyboard_layout(reader,path))
-
+        temp = loading_screen(ocr_keyboard_layout,path=path,reader=reader)
+        print(f"--->{temp}")
+        results.append(temp)
     return results
 
 
-def ocr_keyboard_layout(reader, file_to_analyze):
+def ocr_keyboard_layout(file_to_analyze, reader):
 
     plotoupas = 1
     plotoupas = 0
 
 
-    #print(file_to_analyze)
+
+    print(f"path--->{file_to_analyze}")
 
     img = cv2.imread(file_to_analyze)
 
@@ -122,7 +124,7 @@ def ocr_keyboard_layout(reader, file_to_analyze):
 
 
 
-    #print(isQwerty)
+    print(isQwerty)
 
 
     if isQwerty == 0:

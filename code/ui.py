@@ -201,9 +201,9 @@ class App(ctk.CTk):
 
         try:
             finalResult = ocr_keyboard_layout_multi_files(self.reader,files_to_analyze)
-        except:
+        except Exception as e:
             for _ in range(5):
-                print("ERRROORR")
+                print(e)
 
         count = 0
 
